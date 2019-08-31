@@ -3,6 +3,7 @@ use crate::object::{Dictionary, Primitive, Value};
 use crate::prelude::*;
 use bson::{encode_document, oid::ObjectId, spec::BinarySubtype, Bson, Document};
 use std::convert::TryInto;
+use std::str::FromStr;
 
 pub struct ToBSON;
 
@@ -36,7 +37,7 @@ pub fn value_to_bson_value(v: &Value) -> Bson {
         Value::Primitive(Primitive::Date(d)) => Bson::UtcDatetime(*d),
         Value::Primitive(Primitive::EndOfStream) => Bson::Null,
         Value::Primitive(Primitive::BeginningOfStream) => Bson::Null,
-        Value::Primitive(Primitive::Decimal(d)) => Bson::FloatingPoint(d.to_f64().unwrap()),
+        Value::Primitive(Primitive::Decimal(d)) => Bson::Decimal128(bson::decimal128::Decimal128::from_str(&d.to_string())),
         Value::Primitive(Primitive::Int(i)) => Bson::I64(*i),
         Value::Primitive(Primitive::Nothing) => Bson::Null,
         Value::Primitive(Primitive::String(s)) => Bson::String(s.clone()),
